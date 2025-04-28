@@ -1,0 +1,6 @@
+🔍 Evaluation on Validation Set:
+MSE: 17.86
+MAE: 2.61
+RMSE: 4.23
+R2 Score: 0.9463
+

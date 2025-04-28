@@ -2,3 +2,11 @@
 .conda
 __pycache__
 output.json
+*.json
+*.csv
+tuner_dir
+*.log
+*.pkl
+tuned_model
+*.h5
+*.onnx
