@@ -1,24 +1,26 @@
 from dotenv import load_dotenv, find_dotenv
 import os
 import json
-from CosmosObjects import CosmosObjects as co
 import pandas as pd
+from collections import defaultdict
+from azure.cosmos import CosmosClient
+from CosmosObjects import CosmosObjects as co
 
 # Load environment variables
 load_dotenv(find_dotenv())
 
-# Query Cosmos DB
+# Step 1: Query symbol-specific Cosmos document
 cosmos_query = "select * from c"
 container = co.getCosmosContainer(os.environ["container_name"])
 results = list(container.query_items(query=cosmos_query, enable_cross_partition_query=True))
 
-# Get company symbol from user
+# Get user input
 comp_symbol = input("Enter the company symbol (e.g., WIND.N0000): ").strip()
 
 # Find the data for the given symbol
 company_data = next((item for item in results if item.get("id") == comp_symbol), None)
 
-# Save to file
+# Save to JSON
 if company_data:
     with open(f"{comp_symbol}.json", "w", encoding="utf-8") as f:
         json.dump(company_data, f, indent=4)
@@ -26,26 +28,74 @@ else:
     print(f"{comp_symbol} not found in the Cosmos results.")
     exit()
 
-# Load the JSON file
+# Step 2: Load the JSON data
 with open(f"{comp_symbol}.json", 'r', encoding='utf-8-sig') as f:
     data = json.load(f)
 
-# Extract the relevant data from the dynamic key (comp_symbol)
+# Extract and convert to DataFrame
 if comp_symbol in data:
     records = data[comp_symbol]
     df = pd.DataFrame(records)
 else:
     raise ValueError(f"Key '{comp_symbol}' not found in the JSON file.")
 
-# Clean up BOM if any
+# Clean BOM if present
 df.columns = [col.replace('\ufeff', '') for col in df.columns]
 
-# Filter required columns
-df_filtered = df[['Trade Date', 'Close (Rs.)']]
-print(df_filtered)
+# Filter columns
+df_filtered = df[['Trade Date', 'Close (Rs.)']].copy()
 
-# Save the filtered DataFrame to a CSV file
-df_filtered.to_csv("Company_stock_price.csv", index=False, encoding='utf-8-sig')
+# Convert Trade Date to datetime
+df_filtered['Trade Date'] = pd.to_datetime(df_filtered['Trade Date'])
 
+# Step 3: Append additional data from daily uploads (IDs starting with '20')
+endpoint = os.getenv("COSMOS_ENDPOINT")
+key = os.getenv("COSMOS_KEY")
+database_name = os.getenv("COSMOS_DATABASE_NAME")
+container_name = os.getenv("container_name")
 
+client = CosmosClient(endpoint, credential=key)
+database = client.get_database_client(database_name)
+container = database.get_container_client(container_name)
 
+# Query for IDs starting with '20'
+query = "SELECT c.id FROM c WHERE STARTSWITH(c.id, '20')"
+items = list(container.query_items(query=query, enable_cross_partition_query=True))
+id_list = [item["id"] for item in items]
+
+# Collect company-wise data
+company_data = defaultdict(list)
+for doc_id in id_list:
+    document = container.read_item(item=doc_id, partition_key=doc_id)
+    upload_date = document["upload_date"]
+    for company in document["data"]:
+        symbol = company["Symbol"]
+        if symbol != comp_symbol:
+            continue  # Skip other symbols
+        last_trade_str = company.get("Last Trade Rs", "0").replace(",", "")
+        try:
+            last_trade = float(last_trade_str)
+        except ValueError:
+            last_trade = None
+        company_data[symbol].append({
+            "Trade Date": pd.to_datetime(upload_date, format="%Y%m%d"),
+            "Close (Rs.)": last_trade
+        })
+
+# Create DataFrame from new data
+if comp_symbol in company_data:
+    df_new = pd.DataFrame(company_data[comp_symbol])
+    df_combined = pd.concat([df_filtered, df_new], ignore_index=True)
+    df_combined.drop_duplicates(subset="Trade Date", keep="last", inplace=True)
+    df_combined.sort_values(by="Trade Date", inplace=True)
+else:
+    print(f"No additional data found for {comp_symbol}")
+    df_combined = df_filtered
+
+# Save to CSV
+df_combined.to_csv("Company_stock_price.csv", index=False, encoding='utf-8-sig')
+
+# Show output
+print(f"\nFinal combined stock price data for {comp_symbol}:")
+print(df_combined.tail())
+print(df_combined)

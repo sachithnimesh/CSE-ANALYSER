@@ -42,7 +42,6 @@ if company_symbol:
     # Placeholder for further processing
     st.write("Processing data for the company symbol...")
 
-    # Run ETL_PIPELINE.py with the company_symbol as a parameter
-    etl_script_path = r"D:\Browns\CSE ANALYSER\ETL_PIPELINE.py"
-    etl_command = f'python "{etl_script_path}" "{company_symbol}"'
-    os.system(etl_command)
+# Run ETL_PIPELINE.py with the company_symbol as a parameter
+etl_command = f'python D:\Browns\CSE ANALYSER\ETL_PIPELINE.py "{company_symbol}"'
+os.system(etl_command)
