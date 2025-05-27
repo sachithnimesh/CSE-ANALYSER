@@ -34,7 +34,7 @@ latest_sequence = X_features[-seq_length:]  # last 60 time steps
 latest_sequence = np.expand_dims(latest_sequence, axis=0)  # reshape for LSTM input
 
 # 6. Load Trained Model
-model = load_model('final_trained_model.h5')
+model = load_model('best_lstm_model.h5')
 
 # 7. Forecast 7 Future Days
 future_predictions_scaled = []
