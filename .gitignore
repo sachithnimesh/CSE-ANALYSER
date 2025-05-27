@@ -11,3 +11,4 @@ tuned_model
 *.h5
 *.onnx
 Local Storage
+*.pdf
