@@ -89,20 +89,55 @@ for i in range(trim_steps, 0, -1):
         result['Trim'] = f'Trim_{i}'
         results.append(result)
 
+# # Combine results for chart
+# if results:
+#     combined_df = pd.DataFrame()
+#     for result in results:
+#         label = result['Trim'].iloc[0]
+#         temp_df = result[['Trade Date', 'Close (Rs.)']].copy()
+#         temp_df = temp_df.rename(columns={'Close (Rs.)': label})
+#         if combined_df.empty:
+#             combined_df = temp_df
+#         else:
+#             combined_df = pd.merge(combined_df, temp_df, on='Trade Date', how='outer')
+
+#     combined_df = combined_df.sort_values('Trade Date').set_index('Trade Date')
+#     st.subheader("📈 Forecast Chart (using st.line_chart)")
+#     st.line_chart(combined_df)
+# else:
+#     st.warning("⚠ No valid forecasts generated.")
+# Combine results for chart
+
+
+from datetime import datetime
+
 # Combine results for chart
 if results:
     combined_df = pd.DataFrame()
     for result in results:
         label = result['Trim'].iloc[0]
         temp_df = result[['Trade Date', 'Close (Rs.)']].copy()
+        temp_df['Trade Date'] = pd.to_datetime(temp_df['Trade Date'])  # Ensure datetime
         temp_df = temp_df.rename(columns={'Close (Rs.)': label})
         if combined_df.empty:
             combined_df = temp_df
         else:
             combined_df = pd.merge(combined_df, temp_df, on='Trade Date', how='outer')
 
+    # Add actual values (only up to today's date)
+    actual_df = df[['Trade Date', 'Close (Rs.)']].copy()
+    actual_df['Trade Date'] = pd.to_datetime(actual_df['Trade Date'])  # Ensure datetime
+    today = pd.to_datetime(datetime.today().date())
+    actual_df = actual_df[actual_df['Trade Date'] <= today]  # Filter to today
+    actual_df = actual_df.rename(columns={'Close (Rs.)': 'Actual'})
+
+    combined_df = pd.merge(combined_df, actual_df, on='Trade Date', how='outer')
+
+    # Sort and set index
     combined_df = combined_df.sort_values('Trade Date').set_index('Trade Date')
-    st.subheader("📈 Forecast Chart (using st.line_chart)")
+
+    # Plot
+    st.subheader("📈 Forecast Chart with Actual Values (Up to Today)")
     st.line_chart(combined_df)
 else:
     st.warning("⚠ No valid forecasts generated.")

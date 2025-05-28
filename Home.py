@@ -42,5 +42,7 @@ if st.button("📈 Get Historical Data"):
 if st.button("📈 Forecast Stock Prices"):
     st.switch_page("pages/Forecast.py")
 
+if st.button("🤓 Forcsting Comparison"):
+    st.switch_page("pages/Forcasing_comparisson.py")
 if st.button("⚠️ Risk Analysis (VaR)"):
     st.switch_page("pages/var.py")
