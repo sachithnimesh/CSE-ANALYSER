@@ -32,10 +32,17 @@ st.title("🏛️ CSE ANALYSER")
 # Input and Button
 company_symbol = st.text_input("Enter Company Symbol:", "")
 
-if st.button("📈 Get Historical Data"):
+if st.button("📈 Get Historical Data from Cosmos"):
     if company_symbol:
         st.session_state["symbol"] = company_symbol  # Store in session
         st.switch_page("pages/Get_Historical_Data.py")
+    else:
+        st.warning("Please enter a company symbol.")
+
+if st.button("📈 Get Historical Data from local"):
+    if company_symbol:
+        st.session_state["symbol"] = company_symbol  # Store in session
+        st.switch_page("pages\Get data from Local.py")
     else:
         st.warning("Please enter a company symbol.")
 

@@ -132,3 +132,23 @@ print(final_df)
 output_path = r"D:\Browns\CSE ANALYSER\combined_final_data.csv"
 final_df.to_csv(output_path, index=False)
 print(f"\nFinal DataFrame saved to {output_path}")
+
+import pandas as pd
+import os
+
+# Load the master dataset
+input_path = r"D:\Browns\CSE ANALYSER\combined_final_data.csv"
+df = pd.read_csv(input_path)
+
+# Ensure output directory exists
+output_dir = r"D:\Browns\CSE ANALYSER\Local csv of comp"
+os.makedirs(output_dir, exist_ok=True)
+
+# Group by Symbol and save each as individual CSV
+for symbol, group_df in df.groupby('Symbol'):
+    symbol_df = group_df[['Trade Date', 'Close (Rs.)']]  # Only required columns
+    symbol_df = symbol_df.sort_values('Trade Date')      # Optional: sort by date
+    output_file = os.path.join(output_dir, f"{symbol}.csv")
+    symbol_df.to_csv(output_file, index=False)
+
+print("✅ All company CSV files saved successfully.")

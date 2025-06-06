@@ -18,13 +18,15 @@ df = df.sort_values('Trade Date').reset_index(drop=True)
 
 # 3. Calculate Daily Returns
 df['Returns'] = df['Close (Rs.)'].pct_change()
-df.dropna(inplace=True)
 
-# 4. Confidence Level Setup
+# 4. Remove invalid values (NaN, inf, -inf)
+df = df[np.isfinite(df['Returns'])].copy()
+
+# 5. Confidence Level Setup
 confidence_level = 0.95
 alpha = 1 - confidence_level
 
-# 5. VaR Calculations
+# 6. VaR Calculations
 # Historical Simulation
 hist_var = np.percentile(df['Returns'], 100 * alpha)
 
@@ -38,15 +40,17 @@ np.random.seed(42)
 simulated_returns = np.random.normal(mean_return, std_return, 10000)
 mc_var = np.percentile(simulated_returns, 100 * alpha)
 
-# 6. Display Raw Results
+# 7. Display Raw Results
 st.subheader("📊 Calculated VaR Results (95% Confidence, 1-Day Horizon)")
 st.write(f"✅ Historical Simulation VaR: **{hist_var:.4f}** ({hist_var * 100:.2f}%)")
 st.write(f"✅ Parametric (Variance-Covariance) VaR: **{parametric_var:.4f}** ({parametric_var * 100:.2f}%)")
 st.write(f"✅ Monte Carlo Simulation VaR: **{mc_var:.4f}** ({mc_var * 100:.2f}%)")
 
-# 7. Histogram Plot
+# 8. Histogram Plot
+returns_clean = df['Returns']
+
 fig, ax = plt.subplots(figsize=(10, 6))
-ax.hist(df['Returns'], bins=50, color='skyblue', edgecolor='black', alpha=0.7, label='Historical Returns')
+ax.hist(returns_clean, bins=50, color='skyblue', edgecolor='black', alpha=0.7, label='Historical Returns')
 ax.axvline(hist_var, color='red', linestyle='--', label=f'Historical VaR ({hist_var:.2%})')
 ax.axvline(parametric_var, color='green', linestyle='--', label=f'Parametric VaR ({parametric_var:.2%})')
 ax.axvline(mc_var, color='purple', linestyle='--', label=f'Monte Carlo VaR ({mc_var:.2%})')
@@ -57,7 +61,7 @@ ax.legend()
 ax.grid(True)
 st.pyplot(fig)
 
-# 8. Business Interpretation
+# 9. Business Interpretation
 stock_price = df['Close (Rs.)'].iloc[-1]
 
 st.subheader("📢 Interpretation for Business Decision Making")
@@ -90,6 +94,3 @@ st.markdown(f"""
 
 📝 But remember: Markets can be unpredictable. Always manage risk with stop-losses, diversification, and stress testing.
 """)
-
-# # Optional: Back button
-# st.markdown("[🔙 Back to Home](../Home.py)")
