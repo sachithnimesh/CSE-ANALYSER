@@ -134,7 +134,9 @@ streamlit run Home.py
 ## 👨‍💻 Author
 
 Yamannage Sachith Nimesh
+
 Specializing in Data Science & Risk Management
+
 📫 [LinkedIn](https://www.linkedin.com/in/sachith-y-29a336175)  | 🌱 \[IEEE Member: 98467655]
 
 ---
