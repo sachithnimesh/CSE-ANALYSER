@@ -135,6 +135,6 @@ streamlit run Home.py
 
 Yamannage Sachith Nimesh
 Specializing in Data Science & Risk Management
-📫 [LinkedIn](www.linkedin.com/in/sachith-y-29a336175) | 🌱 \[IEEE Member: 98467655]
+📫 [LinkedIn](https://www.linkedin.com/in/sachith-y-29a336175)  | 🌱 \[IEEE Member: 98467655]
 
 ---
