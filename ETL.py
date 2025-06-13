@@ -5,6 +5,8 @@ import pandas as pd
 from collections import defaultdict
 from azure.cosmos import CosmosClient
 from Deprecated.CosmosObjects import CosmosObjects as co
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv()) # read local .env file
 
 # Set up argument parser
 parser = argparse.ArgumentParser(description="Process company symbol for ETL pipeline.")

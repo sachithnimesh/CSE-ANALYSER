@@ -24,7 +24,7 @@ def set_background(jpg_file):
     '''
     st.markdown(page_bg_img, unsafe_allow_html=True)
 
-set_background(r"D:\Browns\CSE ANALYSER\backgrpund.jpg")
+set_background("backgrpund.jpg")
 
 # --- UI Layout ---
 st.title("🏛️ CSE ANALYSER")

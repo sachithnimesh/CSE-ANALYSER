@@ -25,7 +25,7 @@ def set_background(jpg_file):
     '''
     st.markdown(page_bg_img, unsafe_allow_html=True)
 
-set_background(r"D:\Browns\CSE ANALYSER\backgrpund.jpg")
+set_background("backgrpund.jpg")
 
 st.title("📊 Historical Stock Data Result")
 
@@ -38,7 +38,7 @@ if not company_symbol:
 
 st.write(f"Processing data for: **{company_symbol}**...")
 
-etl_script_path = r"D:\Browns\CSE ANALYSER\ETL.py"
+etl_script_path = "ETL.py"
 
 try:
     result = subprocess.run(["python", etl_script_path, company_symbol],
@@ -50,7 +50,7 @@ except subprocess.CalledProcessError as e:
     st.code(e.stderr)
     st.stop()
 
-file_path = r"D:\Browns\CSE ANALYSER\Company_stock_price.csv"
+file_path = "Company_stock_price.csv"
 if os.path.exists(file_path):
     df = pd.read_csv(file_path)
     st.subheader("📈 Company Stock Price Data")
