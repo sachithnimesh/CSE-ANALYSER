@@ -48,6 +48,39 @@ CSE-Analyzer/
 
 ---
 
+
+
+
+## 🔐 Environment Configuration (`.env`)
+
+Before running the application, you must create a `.env` file in the root directory to securely store your **Azure Cosmos DB** connection details.
+
+### 🔧 Required Variables
+
+```env
+COSMOS_ENDPOINT="https://<your-cosmos-account>.documents.azure.com:443/"
+COSMOS_KEY="<your-primary-or-secondary-key>"
+COSMOS_DATABASE_NAME="db_conversation_history"
+CONTAINER_NAME="csetest"
+```
+
+### 📌 Description of Each Variable:
+
+| Variable               | Description                                                             |
+| ---------------------- | ----------------------------------------------------------------------- |
+| `COSMOS_ENDPOINT`      | The URL endpoint of your Azure Cosmos DB account.                       |
+| `COSMOS_KEY`           | The primary or secondary key used to authenticate with Cosmos DB.       |
+| `COSMOS_DATABASE_NAME` | The name of the Cosmos DB database (e.g., `db_conversation_history`).   |
+| `CONTAINER_NAME`       | The name of the container (collection) used to store and retrieve data. |
+
+### ⚠️ Security Tips:
+
+* **Do not commit** your `.env` file to version control (already covered by `.gitignore`).
+* Rotate keys periodically for better security.
+* Use **Azure Key Vault** in production deployments for enhanced credential management.
+
+---
+
 ## 🧪 Models and Analytics
 
 ### ✅ Forecasting
@@ -97,6 +130,20 @@ Each method produces graphical and numerical summaries for risk comparison.
 * Scripts: `Localdata2csv.py`, `local2spcsv.py`, `clonefilesto local.py`
 
 ---
+
+
+## 🔍 Sample Screenshot – Cosmos DB Integration
+
+This screenshot shows a sample structure of data stored in **Azure Cosmos DB**, which the ETL pipeline extracts and processes.
+
+[![Screenshot of Cosmos DB](https://github.com/sachithbrowns/CSE-ANALYSER/blob/main/Screenshot%20of%20Exampls/ss%20of%20Cosmos%20DB.png)](https://github.com/sachithbrowns/CSE-ANALYSER/blob/main/Screenshot%20of%20Exampls/ss%20of%20Cosmos%20DB.png)
+
+> 📌 *Click the image to view it in full size.*
+
+---
+
+
+
 
 ## 📦 Setup Instructions
 
